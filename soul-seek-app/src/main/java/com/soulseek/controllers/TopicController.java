@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
-
+import java.io.File;
+import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,17 +38,19 @@ public class TopicController {
 
 		URL url = getClass().getResource("youtube-dl.exe");
 
-		// Execute command
-		String command = url.getPath() + " \"ytsearch:" + song + "\" -f bestaudio -g";
-
+		
 		try {
+			File file = new File(url.toURI());
+			// Execute command
+		 	String command = file.getPath() + " \"ytsearch:" + song + "\" -f bestaudio -g";
+
 			Process process = Runtime.getRuntime().exec(command);
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			while ((output = input.readLine()) != null) {
 				System.out.println(output);
 				return output;
 			}
-		} catch (IOException e) {
+		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
 
